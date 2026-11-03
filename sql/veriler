@@ -1,0 +1,51 @@
+USE SuKanalizasyonDB;
+GO
+
+-- Abone Turleri
+INSERT INTO AboneTurleri (TurAdi, BirimFiyat) VALUES 
+('Mesken', 18.50),
+('Ticari', 32.00),
+('Sanayi', 45.00),
+('Kamu Kurumu', 15.00);
+GO
+
+-- Aboneler
+INSERT INTO Aboneler (Ad, Soyad, TCKN, Telefon, Eposta, Adres, Ilce, Mahalle, TurID) VALUES 
+('Ahmet', 'Yılmaz', '11111111110', '05551112233', 'ahmet.yilmaz@mail.com', 'Atatürk Cad. No:12 D:4', 'Melikgazi', 'Alpaslan', 1),
+('Mehmet', 'Kaya', '22222222220', '05552223344', 'mehmet.kaya@mail.com', 'Sivas Cad. No:45', 'Kocasinan', 'Fevziçakmak', 1),
+('Özlem', 'Demir', '33333333330', '05553334455', 'ozlem.demir@mail.com', 'Organize Sanayi 12. Cadde No:8', 'İncesu', 'Sanayi', 3),
+('Ayşe', 'Çelik', '44444444440', '05554445566', 'ayse.celik@mail.com', 'Millet Cad. Park Apt. D:2', 'Talas', 'Mevlana', 1),
+('Murat', 'Şahin', '55555555550', '05555556677', 'murat.sahin@mail.com', 'Sanayi Bölgesi 4. Sokak', 'Melikgazi', 'Organize', 2);
+GO
+
+-- Sayaclar
+INSERT INTO Sayaclar (SeriNo, AboneID, MontajTarihi, SonOkumaTarihi, AktifMi) VALUES 
+('SYC-2024-001', 1, '2024-01-15', '2024-03-01', 1),
+('SYC-2024-002', 2, '2024-02-10', '2024-03-01', 1),
+('SYC-2024-003', 3, '2023-11-05', '2024-03-01', 1),
+('SYC-2024-004', 4, '2024-01-20', '2024-03-01', 1),
+('SYC-2024-005', 5, '2023-08-14', '2024-03-01', 1);
+GO
+
+-- Faturalar
+INSERT INTO Faturalar (SayacID, IlkEndeks, SonEndeks, ToplamTutar, FaturaTarihi, SonOdemeTarihi, OdendiMi, OdemeTarihi) VALUES 
+(1, 120.00, 134.50, 268.25, '2024-03-01', '2024-03-20', 1, '2024-03-15 14:20:00'),
+(2, 45.00, 52.00, 129.50, '2024-03-01', '2024-03-20', 0, NULL),
+(3, 850.00, 980.00, 5850.00, '2024-03-01', '2024-03-25', 0, NULL),
+(4, 30.00, 38.00, 148.00, '2024-03-01', '2024-03-20', 1, '2024-03-10 09:45:00'),
+(5, 410.00, 465.00, 1760.00, '2024-03-01', '2024-03-22', 0, NULL);
+GO
+
+-- Ekipler
+INSERT INTO Ekipler (EkipAdi, SorumluKisi, IletisimTel, Bolge) VALUES 
+('Melikgazi Acil Müdahale', 'Ali Usta', '05001234567', 'Melikgazi'),
+('Kocasinan Kanal Açma', 'Veli Tekin', '05009876543', 'Kocasinan'),
+('Talas Arıza Onarım', 'Hasan Koç', '05005557788', 'Talas');
+GO
+
+-- Arizalar
+INSERT INTO Arizalar (AboneID, ArizaTuru, Aciklama, Adres, BildirimTarihi, Durum, AtananEkipID, CozumTarihi) VALUES 
+(1, 'Sayaç Arızası', 'Sayaç ekranı okunmuyor, su akışı devam ediyor.', 'Atatürk Cad. No:12 D:4 Melikgazi', '2024-03-02 10:15:00', 'İnceleniyor', 1, NULL),
+(NULL, 'Ana Boru Patlağı', 'Kaldırım altından ana hatta su sızıntısı var.', 'İstasyon Cad. Meydan Girişi Kocasinan', '2024-03-03 08:30:00', 'Açık', 2, NULL),
+(4, 'Kanal Tıkanıklığı', 'Bina ana giderinde geri basma yaşanıyor.', 'Millet Cad. Park Apt. Önü Talas', '2024-03-01 16:45:00', 'Çözüldü', 3, '2024-03-01 18:30:00');
+GO
