@@ -1,0 +1,87 @@
+CREATE DATABASE SuKanalizasyonDB;
+GO
+
+USE SuKanalizasyonDB;
+GO
+
+-- Abone turleri tanim tablosu
+CREATE TABLE AboneTurleri (
+    TurID INT IDENTITY(1,1) PRIMARY KEY,
+    TurAdi NVARCHAR(50) NOT NULL UNIQUE,
+    BirimFiyat DECIMAL(10,2) NOT NULL
+);
+GO
+
+-- Abone temel bilgileri
+CREATE TABLE Aboneler (
+    AboneID INT IDENTITY(1,1) PRIMARY KEY,
+    Ad NVARCHAR(50) NOT NULL,
+    Soyad NVARCHAR(50) NOT NULL,
+    TCKN CHAR(11) NOT NULL UNIQUE,
+    Telefon VARCHAR(15) NULL,
+    Eposta NVARCHAR(100) NULL,
+    Adres NVARCHAR(250) NOT NULL,
+    Ilce NVARCHAR(50) NOT NULL,
+    Mahalle NVARCHAR(50) NOT NULL,
+    TurID INT NOT NULL,
+    KayitTarihi DATETIME DEFAULT GETDATE(),
+    Durum BIT DEFAULT 1,
+    CONSTRAINT FK_Aboneler_AboneTurleri FOREIGN KEY (TurID) REFERENCES AboneTurleri(TurID)
+);
+GO
+
+-- Sayac bilgileri
+CREATE TABLE Sayaclar (
+    SayacID INT IDENTITY(1,1) PRIMARY KEY,
+    SeriNo VARCHAR(50) NOT NULL UNIQUE,
+    AboneID INT NOT NULL,
+    MontajTarihi DATE NOT NULL,
+    SonOkumaTarihi DATE NULL,
+    AktifMi BIT DEFAULT 1,
+    CONSTRAINT FK_Sayaclar_Aboneler FOREIGN KEY (AboneID) REFERENCES Aboneler(AboneID)
+);
+GO
+
+-- Endeks ve faturalandirma
+CREATE TABLE Faturalar (
+    FaturaID INT IDENTITY(1,1) PRIMARY KEY,
+    SayacID INT NOT NULL,
+    IlkEndeks DECIMAL(10,2) NOT NULL,
+    SonEndeks DECIMAL(10,2) NOT NULL,
+    TuketimM3 AS (SonEndeks - IlkEndeks),
+    ToplamTutar DECIMAL(10,2) NOT NULL,
+    FaturaTarihi DATE DEFAULT CAST(GETDATE() AS DATE),
+    SonOdemeTarihi DATE NOT NULL,
+    OdendiMi BIT DEFAULT 0,
+    OdemeTarihi DATETIME NULL,
+    CONSTRAINT FK_Faturalar_Sayaclar FOREIGN KEY (SayacID) REFERENCES Sayaclar(SayacID),
+    CONSTRAINT CHK_EndeksKontrol CHECK (SonEndeks >= IlkEndeks)
+);
+GO
+
+-- Ariza ve saha ekipleri
+CREATE TABLE Ekipler (
+    EkipID INT IDENTITY(1,1) PRIMARY KEY,
+    EkipAdi NVARCHAR(50) NOT NULL,
+    SorumluKisi NVARCHAR(100) NOT NULL,
+    IletisimTel VARCHAR(15) NOT NULL,
+    Bolge NVARCHAR(50) NOT NULL
+);
+GO
+
+-- Ariza kayitlari ve takibi
+CREATE TABLE Arizalar (
+    ArizaID INT IDENTITY(1,1) PRIMARY KEY,
+    AboneID INT NULL,
+    ArizaTuru NVARCHAR(100) NOT NULL,
+    Aciklama NVARCHAR(500) NULL,
+    Adres NVARCHAR(250) NOT NULL,
+    BildirimTarihi DATETIME DEFAULT GETDATE(),
+    Durum NVARCHAR(20) DEFAULT 'Açık',
+    AtananEkipID INT NULL,
+    CozumTarihi DATETIME NULL,
+    CONSTRAINT FK_Arizalar_Aboneler FOREIGN KEY (AboneID) REFERENCES Aboneler(AboneID),
+    CONSTRAINT FK_Arizalar_Ekipler FOREIGN KEY (AtananEkipID) REFERENCES Ekipler(EkipID),
+    CONSTRAINT CHK_Durum CHECK (Durum IN ('Açık', 'İnceleniyor', 'Çözüldü', 'İptal'))
+);
+GO
